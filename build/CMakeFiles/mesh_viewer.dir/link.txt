@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/mesh_viewer.dir/src/viewer/main.cpp.o CMakeFiles/mesh_viewer.dir/src/viewer/Shader.cpp.o -o mesh_viewer  libmesh_core.a libimgui.a _deps/glad-build/libglad.a _deps/glfw-build/src/libglfw3.a -framework OpenGL -framework Cocoa -framework IOKit -framework CoreFoundation

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmesh_core.a CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o
+/usr/bin/ranlib libmesh_core.a

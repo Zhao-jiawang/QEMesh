@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/sunking/Desktop/QEM-New/build/cmake_install.cmake",
+		"/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/cmake_install.cmake",
+		"/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/src/cmake_install.cmake",
+		"/Users/sunking/Desktop/QEM-New/build/_deps/glad-build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

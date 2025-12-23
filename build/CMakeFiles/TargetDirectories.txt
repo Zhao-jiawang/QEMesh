@@ -1,0 +1,16 @@
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/mesh_core.dir
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/mesh_simp.dir
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/imgui.dir
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/mesh_viewer.dir
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/edit_cache.dir
+/Users/sunking/Desktop/QEM-New/build/CMakeFiles/rebuild_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/CMakeFiles/edit_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/CMakeFiles/rebuild_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/src/CMakeFiles/update_mappings.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/src/CMakeFiles/glfw.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/src/CMakeFiles/edit_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glfw-build/src/CMakeFiles/rebuild_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glad-build/CMakeFiles/glad-generate-files.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glad-build/CMakeFiles/glad.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glad-build/CMakeFiles/edit_cache.dir
+/Users/sunking/Desktop/QEM-New/build/_deps/glad-build/CMakeFiles/rebuild_cache.dir

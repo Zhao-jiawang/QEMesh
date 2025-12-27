@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "../core/Mesh.h"
+#include "../core/HalfEdgeMesh.h"
 #include "../core/Simplify.h"
 #include "../core/Tsv.h"
 #include "Math.h"
@@ -25,8 +26,18 @@ struct GLMesh {
     int index_count = 0;
 };
 
+struct GLLineMesh {
+    GLuint vao = 0;
+    GLuint vbo = 0;
+    int vertex_count = 0;
+};
+
 static bool wireframe_mode = false;
 static bool show_before = true;
+static bool show_halfedges = false;
+static bool show_boundary_only = false;
+static float arrow_scale = 0.6f;
+static float twin_offset_scale = 0.6f;
 static float yaw_deg = 0.0f;
 static float pitch_deg = 0.0f;
 static float distance_to_center = 3.0f;
@@ -147,11 +158,137 @@ void upload_mesh(GLMesh& glmesh, const std::vector<float>& vertices, const std::
     glmesh.index_count = static_cast<int>(indices.size());
 }
 
+void upload_lines(GLLineMesh& glmesh, const std::vector<float>& vertices) {
+    if (glmesh.vao == 0) {
+        glGenVertexArrays(1, &glmesh.vao);
+        glGenBuffers(1, &glmesh.vbo);
+    }
+    glBindVertexArray(glmesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, glmesh.vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    glBindVertexArray(0);
+    glmesh.vertex_count = static_cast<int>(vertices.size() / 6);
+}
+
 void destroy_mesh(GLMesh& glmesh) {
     if (glmesh.ebo) glDeleteBuffers(1, &glmesh.ebo);
     if (glmesh.vbo) glDeleteBuffers(1, &glmesh.vbo);
     if (glmesh.vao) glDeleteVertexArrays(1, &glmesh.vao);
     glmesh = {};
+}
+
+void destroy_lines(GLLineMesh& glmesh) {
+    if (glmesh.vbo) glDeleteBuffers(1, &glmesh.vbo);
+    if (glmesh.vao) glDeleteVertexArrays(1, &glmesh.vao);
+    glmesh = {};
+}
+
+void build_halfedge_lines(const Mesh& mesh,
+                          std::vector<float>& lines,
+                          std::vector<float>& arrows,
+                          bool boundary_only,
+                          float arrow_scale,
+                          float offset_scale) {
+    HalfEdgeMesh hemesh;
+    hemesh.build_from_mesh(mesh);
+
+    auto face_normal = [&hemesh](int face_id) -> Vec3 {
+        if (face_id < 0 || face_id >= static_cast<int>(hemesh.faces.size())) {
+            return Vec3(0.0, 0.0, 0.0);
+        }
+        const HEFace& hf = hemesh.faces[face_id];
+        if (hf.edge < 0 || hf.edge >= static_cast<int>(hemesh.halfedges.size())) {
+            return Vec3(0.0, 0.0, 0.0);
+        }
+        const HEHalfEdge& e0 = hemesh.halfedges[hf.edge];
+        const HEHalfEdge& e1 = hemesh.halfedges[e0.next];
+        if (e0.from < 0 || e0.to < 0 || e1.to < 0) {
+            return Vec3(0.0, 0.0, 0.0);
+        }
+        const Vec3& p0 = hemesh.vertices[e0.from].p;
+        const Vec3& p1 = hemesh.vertices[e0.to].p;
+        const Vec3& p2 = hemesh.vertices[e1.to].p;
+        Vec3 n = cross(p1 - p0, p2 - p0);
+        return normalize(n);
+    };
+
+    lines.clear();
+    arrows.clear();
+    lines.reserve(hemesh.halfedges.size() * 2 * 6);
+    arrows.reserve(hemesh.halfedges.size() * 3 * 6);
+    for (const auto& he : hemesh.halfedges) {
+        if (!he.valid) continue;
+        if (he.from < 0 || he.to < 0) continue;
+        if (boundary_only && he.twin >= 0) continue;
+        const Vec3& a = hemesh.vertices[he.from].p;
+        const Vec3& b = hemesh.vertices[he.to].p;
+        Vec3 color = (he.twin < 0) ? Vec3(1.0, 0.25, 0.25) : Vec3(0.95, 0.85, 0.2);
+        Vec3 dir = b - a;
+        double len = length(dir);
+        if (len < 1e-12) continue;
+        dir = dir * (1.0 / len);
+        Vec3 offset(0.0, 0.0, 0.0);
+        if (he.twin >= 0) {
+            Vec3 n = face_normal(he.face);
+            Vec3 side = cross(n, dir);
+            double side_len = length(side);
+            if (side_len > 1e-12) {
+                side = side * (1.0 / side_len);
+                double base_off = std::min(0.02, len * 0.05);
+                offset = side * (base_off * std::max(0.0f, offset_scale));
+            }
+        }
+        double base_len = std::max(0.002, std::min(0.02, len * 0.15));
+        double arrow_len = base_len * std::max(0.05f, arrow_scale);
+        Vec3 up(0.0, 1.0, 0.0);
+        if (std::abs(dot(dir, up)) > 0.95) {
+            up = Vec3(1.0, 0.0, 0.0);
+        }
+        Vec3 side = normalize(cross(dir, up));
+        Vec3 up2 = normalize(cross(side, dir));
+        Vec3 base = b - dir * arrow_len + offset;
+        Vec3 left = base + side * (arrow_len * 0.6) + up2 * (arrow_len * 0.1);
+        Vec3 right = base - side * (arrow_len * 0.6) + up2 * (arrow_len * 0.1);
+        Vec3 ao = a + offset;
+        Vec3 bo = b + offset;
+        lines.push_back(static_cast<float>(a.x));
+        lines.push_back(static_cast<float>(a.y));
+        lines.push_back(static_cast<float>(a.z));
+        lines.push_back(static_cast<float>(color.x));
+        lines.push_back(static_cast<float>(color.y));
+        lines.push_back(static_cast<float>(color.z));
+        lines.push_back(static_cast<float>(bo.x));
+        lines.push_back(static_cast<float>(bo.y));
+        lines.push_back(static_cast<float>(bo.z));
+        lines.push_back(static_cast<float>(color.x));
+        lines.push_back(static_cast<float>(color.y));
+        lines.push_back(static_cast<float>(color.z));
+
+        arrows.push_back(static_cast<float>(bo.x));
+        arrows.push_back(static_cast<float>(bo.y));
+        arrows.push_back(static_cast<float>(bo.z));
+        arrows.push_back(static_cast<float>(color.x));
+        arrows.push_back(static_cast<float>(color.y));
+        arrows.push_back(static_cast<float>(color.z));
+        arrows.push_back(static_cast<float>(left.x));
+        arrows.push_back(static_cast<float>(left.y));
+        arrows.push_back(static_cast<float>(left.z));
+        arrows.push_back(static_cast<float>(color.x));
+        arrows.push_back(static_cast<float>(color.y));
+        arrows.push_back(static_cast<float>(color.z));
+        arrows.push_back(static_cast<float>(right.x));
+        arrows.push_back(static_cast<float>(right.y));
+        arrows.push_back(static_cast<float>(right.z));
+        arrows.push_back(static_cast<float>(color.x));
+        arrows.push_back(static_cast<float>(color.y));
+        arrows.push_back(static_cast<float>(color.z));
+    }
 }
 
 void mouse_button_cb(GLFWwindow* window, int button, int action, int) {
@@ -280,10 +417,38 @@ int main(int argc, char** argv) {
         }
     )";
 
+    const char* line_vs = R"(
+        #version 330 core
+        layout(location = 0) in vec3 aPos;
+        layout(location = 1) in vec3 aColor;
+        uniform mat4 uMVP;
+        out vec3 vColor;
+        void main() {
+            vColor = aColor;
+            gl_Position = uMVP * vec4(aPos, 1.0);
+        }
+    )";
+    const char* line_fs = R"(
+        #version 330 core
+        in vec3 vColor;
+        out vec4 FragColor;
+        void main() {
+            FragColor = vec4(vColor, 1.0);
+        }
+    )";
+
     Shader shader;
     std::string shader_err;
     if (!shader.load(vs, fs, &shader_err)) {
         std::fprintf(stderr, "Shader error: %s\n", shader_err.c_str());
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        return 1;
+    }
+
+    Shader line_shader;
+    if (!line_shader.load(line_vs, line_fs, &shader_err)) {
+        std::fprintf(stderr, "Line shader error: %s\n", shader_err.c_str());
         glfwDestroyWindow(window);
         glfwTerminate();
         return 1;
@@ -301,14 +466,30 @@ int main(int argc, char** argv) {
 
     GLMesh gl_input;
     GLMesh gl_output;
+    GLLineMesh gl_lines_input;
+    GLLineMesh gl_lines_output;
+    GLLineMesh gl_arrows_input;
+    GLLineMesh gl_arrows_output;
     std::vector<float> vbo;
     std::vector<unsigned int> ibo;
+    std::vector<float> line_vbo;
+    std::vector<float> arrow_vbo;
     build_render_data(input_mesh, vbo, ibo);
     upload_mesh(gl_input, vbo, ibo);
+    bool he_dirty_input = true;
+    bool he_dirty_output = true;
+    bool last_boundary_only = show_boundary_only;
+    float last_arrow_scale = arrow_scale;
+    float last_offset_scale = twin_offset_scale;
 
     float ratio = 0.5f;
-    std::string csv_path = "results.tsv";
+    std::string csv_path = "results_new.tsv";
     std::string model_name = model_name_from_path(input_path);
+    const char* method_items[] = {"qem", "shortest_edge", "custom"};
+    const char* strategy_items[] = {"edge_collapse", "vertex_delete", "face_contract"};
+    int method_idx = 0;
+    int strategy_idx = 0;
+    float lambda = 0.0f;
     SimplifyStats stats;
     bool has_output = false;
 
@@ -340,20 +521,26 @@ int main(int argc, char** argv) {
                 output_mesh = tmp;
                 build_render_data(output_mesh, vbo, ibo);
                 upload_mesh(gl_output, vbo, ibo);
+                he_dirty_output = true;
                 show_before = false;
             }
         }
         if (key_s == GLFW_PRESS && prev_s == GLFW_RELEASE) {
             output_mesh = input_mesh;
             std::string simp_err;
-            if (simplify_mesh(output_mesh, ratio, &stats, &simp_err)) {
+            SimplifyOptions options;
+            options.method = static_cast<SimplifyMethod>(method_idx);
+            options.strategy = static_cast<SimplifyStrategy>(strategy_idx);
+            options.lambda = lambda;
+            if (simplify_mesh(output_mesh, ratio, options, &stats, &simp_err)) {
                 output_mesh.save_obj(output_path, nullptr);
                 build_render_data(output_mesh, vbo, ibo);
                 upload_mesh(gl_output, vbo, ibo);
+                he_dirty_output = true;
                 has_output = true;
                 show_before = false;
                 std::string csv_err;
-                if (!append_tsv(csv_path, model_name, ratio, stats, &csv_err)) {
+                if (!append_tsv(csv_path, model_name, method_items[method_idx], strategy_items[strategy_idx], ratio, stats, &csv_err)) {
                     std::fprintf(stderr, "%s\n", csv_err.c_str());
                 }
             }
@@ -373,18 +560,33 @@ int main(int argc, char** argv) {
         ImGui::InputText("Output", &output_path);
         ImGui::InputText("Model", &model_name);
         ImGui::InputText("TSV", &csv_path);
+        ImGui::Combo("Method", &method_idx, method_items, 3);
+        ImGui::Combo("Strategy", &strategy_idx, strategy_items, 3);
+        ImGui::InputFloat("Lambda", &lambda, 0.01f, 0.1f, "%.4f");
         ImGui::SliderFloat("Ratio", &ratio, 0.05f, 1.0f);
+        ImGui::Checkbox("Show Half-Edges", &show_halfedges);
+        if (show_halfedges) {
+            ImGui::SameLine();
+            ImGui::Checkbox("Boundary Only", &show_boundary_only);
+            ImGui::SliderFloat("Arrow Scale", &arrow_scale, 0.1f, 1.5f, "%.2f");
+            ImGui::SliderFloat("Twin Offset", &twin_offset_scale, 0.0f, 2.0f, "%.2f");
+        }
         if (ImGui::Button("Simplify (S)")) {
             output_mesh = input_mesh;
             std::string simp_err;
-            if (simplify_mesh(output_mesh, ratio, &stats, &simp_err)) {
+            SimplifyOptions options;
+            options.method = static_cast<SimplifyMethod>(method_idx);
+            options.strategy = static_cast<SimplifyStrategy>(strategy_idx);
+            options.lambda = lambda;
+            if (simplify_mesh(output_mesh, ratio, options, &stats, &simp_err)) {
                 output_mesh.save_obj(output_path, nullptr);
                 build_render_data(output_mesh, vbo, ibo);
                 upload_mesh(gl_output, vbo, ibo);
+                he_dirty_output = true;
                 has_output = true;
                 show_before = false;
                 std::string csv_err;
-                if (!append_tsv(csv_path, model_name, ratio, stats, &csv_err)) {
+                if (!append_tsv(csv_path, model_name, method_items[method_idx], strategy_items[strategy_idx], ratio, stats, &csv_err)) {
                     std::fprintf(stderr, "%s\n", csv_err.c_str());
                 }
             }
@@ -394,6 +596,7 @@ int main(int argc, char** argv) {
             if (load_mesh(input_path, input_mesh, nullptr)) {
                 build_render_data(input_mesh, vbo, ibo);
                 upload_mesh(gl_input, vbo, ibo);
+                he_dirty_input = true;
                 show_before = true;
                 model_name = model_name_from_path(input_path);
             }
@@ -405,6 +608,7 @@ int main(int argc, char** argv) {
                 output_mesh = tmp;
                 build_render_data(output_mesh, vbo, ibo);
                 upload_mesh(gl_output, vbo, ibo);
+                he_dirty_output = true;
                 show_before = false;
             }
         }
@@ -454,6 +658,39 @@ int main(int argc, char** argv) {
         glDrawElements(GL_TRIANGLES, draw_mesh.index_count, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
+        if (show_halfedges) {
+            if (show_boundary_only != last_boundary_only ||
+                std::abs(arrow_scale - last_arrow_scale) > 1e-6f ||
+                std::abs(twin_offset_scale - last_offset_scale) > 1e-6f) {
+                he_dirty_input = true;
+                he_dirty_output = true;
+                last_boundary_only = show_boundary_only;
+                last_arrow_scale = arrow_scale;
+                last_offset_scale = twin_offset_scale;
+            }
+            const Mesh& current = (show_before || !has_output) ? input_mesh : output_mesh;
+            GLLineMesh& lines = (show_before || !has_output) ? gl_lines_input : gl_lines_output;
+            bool& dirty = (show_before || !has_output) ? he_dirty_input : he_dirty_output;
+            if (dirty) {
+                build_halfedge_lines(current, line_vbo, arrow_vbo, show_boundary_only, arrow_scale, twin_offset_scale);
+                upload_lines(lines, line_vbo);
+                GLLineMesh& arrows = (show_before || !has_output) ? gl_arrows_input : gl_arrows_output;
+                upload_lines(arrows, arrow_vbo);
+                dirty = false;
+            }
+            line_shader.use();
+            GLint line_mvp = glGetUniformLocation(line_shader.id(), "uMVP");
+            glUniformMatrix4fv(line_mvp, 1, GL_FALSE, mvp.m);
+            glLineWidth(1.5f);
+            glBindVertexArray(lines.vao);
+            glDrawArrays(GL_LINES, 0, lines.vertex_count);
+            glBindVertexArray(0);
+            GLLineMesh& arrows = (show_before || !has_output) ? gl_arrows_input : gl_arrows_output;
+            glBindVertexArray(arrows.vao);
+            glDrawArrays(GL_TRIANGLES, 0, arrows.vertex_count);
+            glBindVertexArray(0);
+        }
+
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -462,7 +699,12 @@ int main(int argc, char** argv) {
 
     destroy_mesh(gl_input);
     destroy_mesh(gl_output);
+    destroy_lines(gl_lines_input);
+    destroy_lines(gl_lines_output);
+    destroy_lines(gl_arrows_input);
+    destroy_lines(gl_arrows_output);
     shader.destroy();
+    line_shader.destroy();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

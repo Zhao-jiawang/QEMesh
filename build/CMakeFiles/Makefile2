@@ -160,12 +160,12 @@ _deps/glfw-build/src/clean: _deps/glfw-build/src/CMakeFiles/glfw.dir/clean
 CMakeFiles/mesh_core.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=29,30,31,32 "Built target mesh_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=29,30,31,32,33 "Built target mesh_core"
 .PHONY : CMakeFiles/mesh_core.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mesh_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mesh_core.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 0
 .PHONY : CMakeFiles/mesh_core.dir/rule
@@ -177,7 +177,7 @@ mesh_core: CMakeFiles/mesh_core.dir/rule
 # codegen rule for target.
 CMakeFiles/mesh_core.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=29,30,31,32 "Finished codegen for target mesh_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=29,30,31,32,33 "Finished codegen for target mesh_core"
 .PHONY : CMakeFiles/mesh_core.dir/codegen
 
 # clean rule for target.
@@ -192,12 +192,12 @@ CMakeFiles/mesh_core.dir/clean:
 CMakeFiles/mesh_simp.dir/all: CMakeFiles/mesh_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_simp.dir/build.make CMakeFiles/mesh_simp.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_simp.dir/build.make CMakeFiles/mesh_simp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=33,34 "Built target mesh_simp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=34,35 "Built target mesh_simp"
 .PHONY : CMakeFiles/mesh_simp.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mesh_simp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mesh_simp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 0
 .PHONY : CMakeFiles/mesh_simp.dir/rule
@@ -209,7 +209,7 @@ mesh_simp: CMakeFiles/mesh_simp.dir/rule
 # codegen rule for target.
 CMakeFiles/mesh_simp.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_simp.dir/build.make CMakeFiles/mesh_simp.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=33,34 "Finished codegen for target mesh_simp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=34,35 "Finished codegen for target mesh_simp"
 .PHONY : CMakeFiles/mesh_simp.dir/codegen
 
 # clean rule for target.
@@ -260,12 +260,12 @@ CMakeFiles/mesh_viewer.dir/all: _deps/glfw-build/src/CMakeFiles/glfw.dir/all
 CMakeFiles/mesh_viewer.dir/all: _deps/glad-build/CMakeFiles/glad.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_viewer.dir/build.make CMakeFiles/mesh_viewer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_viewer.dir/build.make CMakeFiles/mesh_viewer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=35,36,37 "Built target mesh_viewer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=36,37,38 "Built target mesh_viewer"
 .PHONY : CMakeFiles/mesh_viewer.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mesh_viewer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 35
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 36
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mesh_viewer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/sunking/Desktop/QEM-New/build/CMakeFiles 0
 .PHONY : CMakeFiles/mesh_viewer.dir/rule
@@ -277,7 +277,7 @@ mesh_viewer: CMakeFiles/mesh_viewer.dir/rule
 # codegen rule for target.
 CMakeFiles/mesh_viewer.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_viewer.dir/build.make CMakeFiles/mesh_viewer.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=35,36,37 "Finished codegen for target mesh_viewer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=36,37,38 "Finished codegen for target mesh_viewer"
 .PHONY : CMakeFiles/mesh_viewer.dir/codegen
 
 # clean rule for target.
@@ -292,7 +292,7 @@ CMakeFiles/mesh_viewer.dir/clean:
 _deps/glfw-build/src/CMakeFiles/update_mappings.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/glfw-build/src/CMakeFiles/update_mappings.dir/build.make _deps/glfw-build/src/CMakeFiles/update_mappings.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/glfw-build/src/CMakeFiles/update_mappings.dir/build.make _deps/glfw-build/src/CMakeFiles/update_mappings.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=38 "Built target update_mappings"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=39 "Built target update_mappings"
 .PHONY : _deps/glfw-build/src/CMakeFiles/update_mappings.dir/all
 
 # Build rule for subdir invocation for target.
@@ -309,7 +309,7 @@ update_mappings: _deps/glfw-build/src/CMakeFiles/update_mappings.dir/rule
 # codegen rule for target.
 _deps/glfw-build/src/CMakeFiles/update_mappings.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f _deps/glfw-build/src/CMakeFiles/update_mappings.dir/build.make _deps/glfw-build/src/CMakeFiles/update_mappings.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=38 "Finished codegen for target update_mappings"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=39 "Finished codegen for target update_mappings"
 .PHONY : _deps/glfw-build/src/CMakeFiles/update_mappings.dir/codegen
 
 # clean rule for target.

@@ -1493,6 +1493,7 @@ CMakeFiles/mesh_viewer.dir/src/viewer/main.cpp.o: /Users/sunking/Desktop/QEM-New
   /Users/sunking/Desktop/QEM-New/src/core/Quadric.h \
   /Users/sunking/Desktop/QEM-New/src/core/Simplify.h \
   /Users/sunking/Desktop/QEM-New/src/core/Vec3.h \
+  /Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.h \
   /Users/sunking/Desktop/QEM-New/src/core/Mesh.h \
   /Users/sunking/Desktop/QEM-New/src/core/Simplify.h \
   /Users/sunking/Desktop/QEM-New/src/core/Tsv.h \
@@ -2412,6 +2413,8 @@ _deps/imgui-src/backends/imgui_impl_opengl3.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/ranges_operations.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_remove.h:
+
+/Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_push_heap.h:
 

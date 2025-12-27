@@ -17,6 +17,8 @@
 │   │   ├── Quadric.h
 │   │   ├── Mesh.h
 │   │   ├── Mesh.cpp
+│   │   ├── HalfEdgeMesh.h
+│   │   ├── HalfEdgeMesh.cpp
 │   │   ├── Simplify.h
 │   │   ├── Simplify.cpp
 │   │   ├── Tsv.h
@@ -30,7 +32,7 @@
 │       └── main.cpp
 ├── input/             # 输入 OBJ
 ├── output/            # 简化后 OBJ 输出
-└── results.tsv        # 批量或单次运行的统计结果
+└── results_new.tsv    # 批量或单次运行的统计结果
 ```
 
 ## 文件详细解读与函数/变量说明
@@ -108,11 +110,28 @@
   - `Simplify.cpp` 依赖 Mesh 的邻接、quadric、边界与一致性检查。
   - Viewer/CLI 通过 Mesh 读写 OBJ。
 
+### src/core/HalfEdgeMesh.h / HalfEdgeMesh.cpp
+- 结构体：
+  - `HEVertex`：`p`(位置), `edge`(出发半边), `valid`, `boundary`。
+  - `HEHalfEdge`：`from,to,next,twin,face,valid`。
+  - `HEFace`：`edge, valid`。
+- 主要函数：
+  - `build_from_mesh(mesh)`：从当前三角网格构建 half-edge。
+  - `mark_boundaries()`：标记边界 half-edge/顶点。
+  - `checkConsistency(err)`：验证 twin/next/face 与方向一致性。
+  - `one_ring_ordered(v, ring, boundary)`：返回顶点一环的有序邻居。
+- 调用关系：
+  - `Simplify.cpp` 的 `vertex_delete` 使用 half-edge 构造一环多边形。
+  - Viewer 用 half-edge 生成可视化线段与箭头调试图层。
+
 ### src/core/Simplify.h / Simplify.cpp
 - 结构体：`SimplifyStats`
   - 包含：输入/输出规模、耗时、heap 统计、QEM 误差、质量指标、拓扑统计。
+- 枚举：
+  - `SimplifyMethod`：`qem` / `shortest_edge` / `custom`。
+  - `SimplifyStrategy`：`edge_collapse` / `vertex_delete` / `face_contract`。
 - 主要对外函数：
-  - `simplify_mesh(mesh, ratio, stats, err)`。
+  - `simplify_mesh(mesh, ratio, options, stats, err)`。
 - Simplify.cpp 内部关键结构与函数：
   - `EdgeEntry`：堆节点（cost, v1, v2, target, ver1, ver2）。
   - `EdgeCompare`：小顶堆比较器。
@@ -129,6 +148,9 @@
     - 迁移顶点、更新面、删除无效面。
     - 更新邻接与版本号。
   - `cleanup_neighbors()`：清理无效邻接。
+- 其他策略：
+  - `vertex_delete`：删除顶点并对一环多边形做三角化（ear clipping/扇形）。
+  - `face_contract`：三角形收缩到一点并更新邻接。
 - 流程要点：
   - 初始化：`build_adjacency()` + `compute_quadrics()` + 构建 heap。
   - lazy heap：每次 pop 校验版本；过期项丢弃。
@@ -139,7 +161,7 @@
   - CLI/Viewer 都通过 `simplify_mesh()` 调用核心算法。
 
 ### src/core/Tsv.h / Tsv.cpp
-- 对外函数：`append_tsv(path, model, ratio, stats, err)`
+- 对外函数：`append_tsv(path, model, method, strategy, ratio, stats, err)`
 - 作用：
   - 若 TSV 不存在或为空，先写表头。
   - 每次简化写一行指标。
@@ -151,6 +173,7 @@
 - 变量与参数：
   - 位置参数：`in.obj out.obj ratio`。
   - 可选参数：`--tsv path`、`--model_name name`、`--seed N`。
+  - 新增参数：`--method qem|shortest_edge|custom`、`--strategy edge_collapse|vertex_delete|face_contract`、`--lambda <float>`。
 - 关键调用：
   - `Mesh::load_obj()` -> `simplify_mesh()` -> `Mesh::save_obj()` -> `append_tsv()`。
 - 输出：标准输出仅打印简短摘要和 TSV 路径。
@@ -178,9 +201,11 @@
   - 相机控制：`yaw_deg`, `pitch_deg`, `distance_to_center`。
   - UI 状态：`ratio`, `csv_path`(TSV 路径), `model_name`。
   - Mesh/VBO/IBO：`input_mesh`, `output_mesh`, `gl_input`, `gl_output`。
+  - 调试层：`Show Half-Edges` + `Boundary Only` + `Arrow Scale` + `Twin Offset`。
 - 关键函数：
   - `compute_center()` / `compute_radius()` / `reset_camera_for_mesh()`。
   - `build_render_data()`：从 Mesh 生成位置/法线缓冲。
+  - `build_halfedge_lines()`：从 half-edge 构造线段与箭头。
   - `upload_mesh()` / `destroy_mesh()`：GL buffer 管理。
   - GLFW 回调：鼠标旋转/滚轮缩放。
 - 核心流程：
@@ -209,50 +234,56 @@
 1) model
 - 模型名称标签。
 
-2) ratio
+2) method
+- 代价函数（qem / shortest_edge / custom）。
+
+3) strategy
+- 简化策略（edge_collapse / vertex_delete / face_contract）。
+
+4) ratio
 - 目标面数比例（F_out / F_in）。
 
-3) V_in / F_in
+5) V_in / F_in
 - 输入顶点数、面数。
 
-4) V_out / F_out
+6) V_out / F_out
 - 输出顶点数、面数。
 
-5) time_total_ms
+7) time_total_ms
 - 总耗时。
 
-6) time_build_ms
+8) time_build_ms
 - 初始化阶段耗时（邻接 + quadric + 初始 heap）。
 
-7) time_simplify_ms
+9) time_simplify_ms
 - 简化迭代耗时（heap pop + collapse + 局部更新）。
 
-8) heap_push
+10) heap_push
 - 堆插入次数（含初始与局部更新）。
 
-9) heap_pop
+11) heap_pop
 - 堆弹出次数（含过期项）。
 
-10) local_recompute_edges
+12) local_recompute_edges
 - 局部重算边数量（体现 O(k log E)）。
 
-11) skipped_invalid
+13) skipped_invalid
 - 非法 collapse 计数（翻转、退化、重复面等）。
 
-12) nonmanifold_rejects
+14) nonmanifold_rejects
 - 因生成 non-manifold edge 被拒绝的次数。
 
-13) consistency_ok
+15) consistency_ok
 - 简化后一致性检查是否通过（1/0）。
 
-14) qem_err_mean
+16) qem_err_mean
 - 成功 collapse 的 QEM 代价均值。
 
-15) qem_err_max
+17) qem_err_max
 - 成功 collapse 的 QEM 代价最大值。
 
-16) degenerate_faces
+18) degenerate_faces
 - 输出网格中面积过小的面数。
 
-17) aspect_mean
+19) aspect_mean
 - 三角形质量均值（max_edge^2 / (2*area)，越小越好）。

@@ -412,6 +412,30 @@ src/cli/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_simp.dir/build.make CMakeFiles/mesh_simp.dir/src/cli/main.cpp.s
 .PHONY : src/cli/main.cpp.s
 
+src/core/HalfEdgeMesh.o: src/core/HalfEdgeMesh.cpp.o
+.PHONY : src/core/HalfEdgeMesh.o
+
+# target to build an object file
+src/core/HalfEdgeMesh.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o
+.PHONY : src/core/HalfEdgeMesh.cpp.o
+
+src/core/HalfEdgeMesh.i: src/core/HalfEdgeMesh.cpp.i
+.PHONY : src/core/HalfEdgeMesh.i
+
+# target to preprocess a source file
+src/core/HalfEdgeMesh.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.i
+.PHONY : src/core/HalfEdgeMesh.cpp.i
+
+src/core/HalfEdgeMesh.s: src/core/HalfEdgeMesh.cpp.s
+.PHONY : src/core/HalfEdgeMesh.s
+
+# target to generate assembly for a file
+src/core/HalfEdgeMesh.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_core.dir/build.make CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.s
+.PHONY : src/core/HalfEdgeMesh.cpp.s
+
 src/core/Mesh.o: src/core/Mesh.cpp.o
 .PHONY : src/core/Mesh.o
 
@@ -572,6 +596,9 @@ help:
 	@echo "... src/cli/main.o"
 	@echo "... src/cli/main.i"
 	@echo "... src/cli/main.s"
+	@echo "... src/core/HalfEdgeMesh.o"
+	@echo "... src/core/HalfEdgeMesh.i"
+	@echo "... src/core/HalfEdgeMesh.s"
 	@echo "... src/core/Mesh.o"
 	@echo "... src/core/Mesh.i"
 	@echo "... src/core/Mesh.s"

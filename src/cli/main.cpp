@@ -8,20 +8,29 @@
 
 int main(int argc, char** argv) {
     if (argc < 4) {
-        std::fprintf(stderr, "Usage: mesh_simp in.obj out.obj ratio [--tsv results.tsv] [--model_name name] [--seed 123]\n");
+        std::fprintf(stderr, "Usage: mesh_simp in.obj out.obj ratio [--tsv results.tsv] [--model_name name] [--seed 123] [--method qem|shortest_edge|custom] [--strategy edge_collapse|vertex_delete|face_contract] [--lambda <float>]\n");
         return 1;
     }
     std::string input;
     std::string output;
     double ratio = 0.0;
     bool ratio_set = false;
-    std::string csv_path = "results.tsv";
+    std::string csv_path = "results_new.tsv";
     std::string model_name;
+    std::string method_name = "qem";
+    std::string strategy_name = "edge_collapse";
+    double lambda = 0.0;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--tsv" && i + 1 < argc) {
             csv_path = argv[++i];
+        } else if (arg == "--method" && i + 1 < argc) {
+            method_name = argv[++i];
+        } else if (arg == "--strategy" && i + 1 < argc) {
+            strategy_name = argv[++i];
+        } else if (arg == "--lambda" && i + 1 < argc) {
+            lambda = std::stod(argv[++i]);
         } else if (arg == "--model_name" && i + 1 < argc) {
             model_name = argv[++i];
         } else if (arg == "--seed" && i + 1 < argc) {
@@ -46,7 +55,7 @@ int main(int argc, char** argv) {
     }
 
     if (input.empty() || output.empty() || !ratio_set) {
-        std::fprintf(stderr, "Usage: mesh_simp in.obj out.obj ratio [--tsv results.tsv] [--model_name name] [--seed 123]\n");
+        std::fprintf(stderr, "Usage: mesh_simp in.obj out.obj ratio [--tsv results.tsv] [--model_name name] [--seed 123] [--method qem|shortest_edge|custom] [--strategy edge_collapse|vertex_delete|face_contract] [--lambda <float>]\n");
         return 1;
     }
     if (model_name.empty()) {
@@ -69,8 +78,31 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    SimplifyOptions options;
+    if (method_name == "qem") {
+        options.method = SimplifyMethod::QEM;
+    } else if (method_name == "shortest_edge") {
+        options.method = SimplifyMethod::ShortestEdge;
+    } else if (method_name == "custom") {
+        options.method = SimplifyMethod::Custom;
+    } else {
+        std::fprintf(stderr, "Unknown method: %s\n", method_name.c_str());
+        return 1;
+    }
+    if (strategy_name == "edge_collapse") {
+        options.strategy = SimplifyStrategy::EdgeCollapse;
+    } else if (strategy_name == "vertex_delete") {
+        options.strategy = SimplifyStrategy::VertexDelete;
+    } else if (strategy_name == "face_contract") {
+        options.strategy = SimplifyStrategy::FaceContract;
+    } else {
+        std::fprintf(stderr, "Unknown strategy: %s\n", strategy_name.c_str());
+        return 1;
+    }
+    options.lambda = lambda;
+
     SimplifyStats stats;
-    if (!simplify_mesh(mesh, ratio, &stats, &err)) {
+    if (!simplify_mesh(mesh, ratio, options, &stats, &err)) {
         std::fprintf(stderr, "%s\n", err.c_str());
         return 1;
     }
@@ -80,7 +112,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    if (!append_tsv(csv_path, model_name, ratio, stats, &err)) {
+    if (!append_tsv(csv_path, model_name, method_name, strategy_name, ratio, stats, &err)) {
         std::fprintf(stderr, "%s\n", err.c_str());
         return 1;
     }

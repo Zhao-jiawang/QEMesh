@@ -11,6 +11,7 @@ add_library(mesh_core
     src/core/Mesh.cpp
     src/core/Simplify.cpp
     src/core/Tsv.cpp
+    src/core/HalfEdgeMesh.cpp
 )
 
 target_include_directories(mesh_core PUBLIC src/core)

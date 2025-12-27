@@ -5,6 +5,7 @@
 #include <sstream>
 #include <chrono>
 #include <ctime>
+#include <iostream>
 
 namespace {
 
@@ -35,28 +36,56 @@ bool needs_header(const std::string& path) {
 
 bool append_tsv(const std::string& path,
                 const std::string& model,
+                const std::string& method,
+                const std::string& strategy,
                 double ratio,
                 const SimplifyStats& stats,
                 std::string* err) {
-    bool write_header = needs_header(path);
-    std::ofstream out(path, std::ios::app);
+    const std::string header =
+        "model\tmethod\tstrategy\tratio\t"
+        "V_in\tF_in\tV_out\tF_out\t"
+        "time_total_ms\ttime_build_ms\ttime_simplify_ms\t"
+        "heap_push\theap_pop\tlocal_recompute_edges\tskipped_invalid\tnonmanifold_rejects\tconsistency_ok\t"
+        "qem_err_mean\tqem_err_max\t"
+        "degenerate_faces\taspect_mean\n";
+
+    std::string target_path = path;
+    bool write_header = needs_header(target_path);
+    if (!write_header) {
+        std::ifstream in(target_path);
+        std::string first_line;
+        std::getline(in, first_line);
+        if (first_line + "\n" != header) {
+            std::string dir = target_path;
+            size_t slash = dir.find_last_of("/\\");
+            if (slash != std::string::npos) {
+                dir = dir.substr(0, slash + 1);
+            } else {
+                dir.clear();
+            }
+            target_path = dir + "results_new.tsv";
+            write_header = needs_header(target_path);
+        }
+    }
+
+    if (target_path != path) {
+        std::cerr << "TSV header mismatch, writing to " << target_path << " instead of " << path << ".\n";
+    }
+    std::ofstream out(target_path, std::ios::app);
     if (!out) {
         if (err) {
-            *err = "Failed to open TSV: " + path;
+            *err = "Failed to open TSV: " + target_path;
         }
         return false;
     }
 
     if (write_header) {
-        out << "model\tratio\t"
-            << "V_in\tF_in\tV_out\tF_out\t"
-            << "time_total_ms\ttime_build_ms\ttime_simplify_ms\t"
-            << "heap_push\theap_pop\tlocal_recompute_edges\tskipped_invalid\tnonmanifold_rejects\tconsistency_ok\t"
-            << "qem_err_mean\tqem_err_max\t"
-            << "degenerate_faces\taspect_mean\n";
+        out << header;
     }
 
     out << model << "\t"
+        << method << "\t"
+        << strategy << "\t"
         << std::fixed << std::setprecision(6) << ratio << "\t"
         << stats.initial_vertices << "\t"
         << stats.initial_faces << "\t"

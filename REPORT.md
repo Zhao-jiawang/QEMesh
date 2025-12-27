@@ -30,7 +30,15 @@
 - 收缩后仅更新“新点一环邻域边”的代价（局部更新）。
 - 终止条件：F <= ceil(F0 * ratio) 或无合法 collapse。
 
-### 1.3 鲁棒性约束
+### 1.3 其他代价函数与策略
+- 代价函数：
+  - `shortest_edge`：代价为边长（或边长平方），偏向快速移除短边。
+  - `custom`：QEM + λ * edge_len^2，可平衡形状误差与均匀性。
+- 简化策略：
+  - `vertex_delete`：删点并对一环多边形重三角化（ear clipping/扇形）。
+  - `face_contract`：三角面收缩为一点，更新邻接并检查翻转/退化/重复面。
+
+### 1.4 鲁棒性约束
 - 边界保持：
   - boundary-vertex 与 interior-vertex 禁止合并。
   - boundary-boundary 仅收缩到代价更小的端点。
@@ -68,6 +76,14 @@
   - 邻接用紧凑集合存储，方便局部更新。
   - 边界检测使用“共享面次数”为 1 的边。
 
+#### HalfEdgeMesh.h / HalfEdgeMesh.cpp
+- 算法：半边结构构建与一致性验证。
+- 作用：提供有序一环邻域与边界检测，支持 `vertex_delete` 与可视化。
+- 关键步骤：
+  - 每个三角形拆成 3 个 half-edge，建立 `next` 环。
+  - 通过 (from,to) 哈希匹配 `twin`。
+  - 通过 `twin == -1` 标记边界 half-edge/顶点。
+
 ### 2.2 简化主流程（Simplify.h / Simplify.cpp）
 
 #### 初始化阶段
@@ -88,6 +104,16 @@
 - 局部检查算法：
   - 重复面检测、面翻转检测、退化检测、non-manifold 检测。
 
+#### 其他策略流程
+- vertex_delete：
+  1) 从 half-edge 获取顶点一环有序多边形
+  2) 进行 ear clipping（小环）或扇形三角化
+  3) 检查翻转/退化/重复面与 non-manifold
+- face_contract：
+  1) 计算三角面三顶点 quadric 的合并
+  2) 求最优点或回退质心
+  3) 更新邻接并进行合法性检查
+
 #### 结束阶段
 - 执行 `compact()` 清理无效元素。
 - 统计输出指标：QEM 误差、退化面、aspect mean 等。
@@ -105,6 +131,9 @@
 - 使用 GLFW/GLAD/ImGui。
 - 功能：加载模型、设置 ratio、简化并展示、线框切换、前后对比。
 - 与 CLI 共用同一核心简化逻辑。
+- 调试可视化：
+  - half-edge 线段与箭头叠加显示
+  - 支持边界-only、箭头大小与 twin 偏移调节
 
 ## 3. 复杂度分析
 
@@ -128,10 +157,13 @@
 - 顶点/面存储：O(V + F)
 - 邻接：O(V + E)
 - 堆：O(E)
+- half-edge：O(V + F + E)
 
 ## 4. 统计指标与用途（TSV）
 
 - model：模型名
+- method：代价函数（qem / shortest_edge / custom）
+- strategy：简化策略（edge_collapse / vertex_delete / face_contract）
 - ratio：目标面数比例
 - V_in / F_in：输入顶点/面数
 - V_out / F_out：输出顶点/面数

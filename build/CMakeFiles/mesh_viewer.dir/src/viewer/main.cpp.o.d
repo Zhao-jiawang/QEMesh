@@ -751,8 +751,9 @@ CMakeFiles/mesh_viewer.dir/src/viewer/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_set \
   /Users/sunking/Desktop/QEM-New/src/core/Vec3.h \
   /Users/sunking/Desktop/QEM-New/src/core/Quadric.h \
-  /Users/sunking/Desktop/QEM-New/src/viewer/../core/Simplify.h \
+  /Users/sunking/Desktop/QEM-New/src/viewer/../core/HalfEdgeMesh.h \
   /Users/sunking/Desktop/QEM-New/src/core/Mesh.h \
+  /Users/sunking/Desktop/QEM-New/src/viewer/../core/Simplify.h \
   /Users/sunking/Desktop/QEM-New/src/viewer/../core/Tsv.h \
   /Users/sunking/Desktop/QEM-New/src/core/Simplify.h \
   /Users/sunking/Desktop/QEM-New/src/viewer/Math.h \

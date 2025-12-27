@@ -114,11 +114,26 @@ CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/sunking/Desktop/QEM-New/src/core/Tsv.cpp -o CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.s
 
+CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o: CMakeFiles/mesh_core.dir/flags.make
+CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o: /Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.cpp
+CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o: CMakeFiles/mesh_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o -MF CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o.d -o CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o -c /Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.cpp
+
+CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.cpp > CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.i
+
+CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.cpp -o CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.s
+
 # Object files for target mesh_core
 mesh_core_OBJECTS = \
 "CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o" \
 "CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o" \
-"CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o"
+"CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o" \
+"CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o"
 
 # External object files for target mesh_core
 mesh_core_EXTERNAL_OBJECTS =
@@ -126,9 +141,10 @@ mesh_core_EXTERNAL_OBJECTS =
 libmesh_core.a: CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o
 libmesh_core.a: CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o
 libmesh_core.a: CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o
+libmesh_core.a: CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o
 libmesh_core.a: CMakeFiles/mesh_core.dir/build.make
 libmesh_core.a: CMakeFiles/mesh_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libmesh_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/sunking/Desktop/QEM-New/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libmesh_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/mesh_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mesh_core.dir/link.txt --verbose=$(VERBOSE)
 

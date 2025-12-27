@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INPUT_DIR="${ROOT_DIR}/input"
 OUTPUT_DIR="${ROOT_DIR}/output"
-TSV_PATH="${ROOT_DIR}/results.tsv"
+TSV_PATH="${ROOT_DIR}/results_new.tsv"
 RATIOS=(0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9)
 
 if [[ ! -x "${ROOT_DIR}/build/mesh_simp" ]]; then

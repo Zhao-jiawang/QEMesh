@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/Users/sunking/Desktop/QEM-New/src/core/HalfEdgeMesh.cpp" "CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o" "gcc" "CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o.d"
   "/Users/sunking/Desktop/QEM-New/src/core/Mesh.cpp" "CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o" "gcc" "CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o.d"
   "/Users/sunking/Desktop/QEM-New/src/core/Simplify.cpp" "CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o" "gcc" "CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o.d"
   "/Users/sunking/Desktop/QEM-New/src/core/Tsv.cpp" "CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o" "gcc" "CMakeFiles/mesh_core.dir/src/core/Tsv.cpp.o.d"

@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o"
+  "CMakeFiles/mesh_core.dir/src/core/HalfEdgeMesh.cpp.o.d"
   "CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o"
   "CMakeFiles/mesh_core.dir/src/core/Mesh.cpp.o.d"
   "CMakeFiles/mesh_core.dir/src/core/Simplify.cpp.o"

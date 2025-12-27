@@ -23,4 +23,22 @@ struct SimplifyStats {
     double aspect_mean = 0.0;
 };
 
-bool simplify_mesh(Mesh& mesh, double ratio, SimplifyStats* stats, std::string* err);
+enum class SimplifyMethod {
+    QEM,
+    ShortestEdge,
+    Custom
+};
+
+enum class SimplifyStrategy {
+    EdgeCollapse,
+    VertexDelete,
+    FaceContract
+};
+
+struct SimplifyOptions {
+    SimplifyMethod method = SimplifyMethod::QEM;
+    SimplifyStrategy strategy = SimplifyStrategy::EdgeCollapse;
+    double lambda = 0.0;
+};
+
+bool simplify_mesh(Mesh& mesh, double ratio, const SimplifyOptions& options, SimplifyStats* stats, std::string* err);
